@@ -1,6 +1,9 @@
 package godaddy
 
 import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -34,16 +37,21 @@ func Provider() *schema.Provider {
 			"godaddy_domain_record": resourceDomainRecord(),
 		},
 
-		ConfigureFunc: providerConfigure,
+		ConfigureContextFunc: providerConfigure,
 	}
 }
 
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+func providerConfigure(_ context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	config := Config{
 		Key:     d.Get("key").(string),
 		Secret:  d.Get("secret").(string),
 		BaseURL: d.Get("baseurl").(string),
 	}
 
-	return config.Client()
+	client, err := config.Client()
+	if err != nil {
+		return nil, diag.FromErr(err)
+	}
+
+	return client, nil
 }

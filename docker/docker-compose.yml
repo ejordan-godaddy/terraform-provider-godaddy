@@ -1,4 +1,3 @@
-version: '3'
 services:
   builder:
     container_name: godaddy-provider-builder
@@ -8,4 +7,4 @@ services:
       dockerfile: docker/Dockerfile
     restart: "no"
     volumes:
-    - ..:/go/src/github.com/n3integration/terraform-provider-godaddy
+      - ..:/go/src/github.com/ejordan-godaddy/terraform-provider-godaddy

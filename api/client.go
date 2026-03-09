@@ -62,9 +62,9 @@ func NewClient(baseURL, key, secret string) (*Client, error) {
 	}
 
 	var netTransport = &http.Transport{
-		Dial: (&net.Dialer{
+		DialContext: (&net.Dialer{
 			Timeout: 10 * time.Second,
-		}).Dial,
+		}).DialContext,
 		TLSHandshakeTimeout: 10 * time.Second,
 	}
 
