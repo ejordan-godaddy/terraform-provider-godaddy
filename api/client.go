@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -82,7 +83,7 @@ func NewClient(baseURL, key, secret string) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) execute(customerID string, req *http.Request, result interface{}) error {
+func (c *Client) execute(ctx context.Context, customerID string, req *http.Request, result interface{}) error {
 	if len(strings.TrimSpace(customerID)) > 0 {
 		req.Header.Set(headerCustomerID, customerID)
 	}

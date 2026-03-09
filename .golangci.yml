@@ -1,0 +1,43 @@
+# golangci-lint configuration for terraform-provider-godaddy
+# Docs: https://golangci-lint.run/usage/configuration/
+
+run:
+  # CI environments can be slow; give it room.
+  timeout: 5m
+  go: "1.22"
+
+linters:
+  # Disable everything by default, then enable only what we need.
+  # Keeps noise low for a small provider codebase.
+  disable-all: true
+  enable:
+    - errcheck      # unchecked errors
+    - gosimple      # simplifications
+    - govet         # suspicious constructs (go vet)
+    - ineffassign   # useless assignments
+    - staticcheck   # advanced static analysis
+    - unused        # unused code
+    - gosec         # security issues
+    - misspell      # common typos in comments/strings
+    - gofmt         # formatting
+    - goimports     # import ordering
+
+linters-settings:
+  gosec:
+    # Only flag high-confidence issues; avoids churn.
+    severity: medium
+
+  misspell:
+    locale: US
+
+  goimports:
+    # Group project imports separately from stdlib.
+    local-prefixes: github.com/ejordan-godaddy/terraform-provider-godaddy
+
+issues:
+  # Don't flag gosec in test files — test helpers often do
+  # things (hard-coded creds, etc.) that are fine in tests.
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gosec

@@ -210,7 +210,7 @@ func resourceDomainRecord() *schema.Resource {
 	}
 }
 
-func resourceDomainRecordRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceDomainRecordRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*api.Client)
 	customer := d.Get(attrCustomer).(string)
 	domain := d.Get(attrDomain).(string)
@@ -226,7 +226,7 @@ func resourceDomainRecordRead(_ context.Context, d *schema.ResourceData, meta in
 	}
 
 	log.Println("Fetching", domain, "records...")
-	records, err := client.GetDomainRecords(customer, domain)
+	records, err := client.GetDomainRecords(ctx, customer, domain)
 	if err != nil {
 		return diag.FromErr(fmt.Errorf("couldn't find domain record (%s): %s", domain, err.Error()))
 	}
@@ -236,74 +236,74 @@ func resourceDomainRecordRead(_ context.Context, d *schema.ResourceData, meta in
 		return diag.FromErr(err)
 	}
 
-	if err := populateDomainInfo(client, r, d); err != nil {
+	if err := populateDomainInfo(ctx, client, r, d); err != nil {
 		return diag.FromErr(err)
 	}
 	return nil
 }
 
-func resourceDomainRecordCreate(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceDomainRecordCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*api.Client)
 	r, err := newDomainRecordResource(d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	if err = populateDomainInfo(client, r, d); err != nil {
+	if err = populateDomainInfo(ctx, client, r, d); err != nil {
 		return diag.FromErr(err)
 	}
 
 	log.Println("Creating", r.Domain, "domain records...")
 	r.converge()
-	if err := client.UpdateDomainRecords(r.Customer, r.Domain, r.Records); err != nil {
+	if err := client.UpdateDomainRecords(ctx, r.Customer, r.Domain, r.Records); err != nil {
 		return diag.FromErr(err)
 	}
 	return nil
 }
 
-func resourceDomainRecordUpdate(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceDomainRecordUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*api.Client)
 	r, err := newDomainRecordResource(d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	if err = populateDomainInfo(client, r, d); err != nil {
+	if err = populateDomainInfo(ctx, client, r, d); err != nil {
 		return diag.FromErr(err)
 	}
 
 	log.Println("Updating", r.Domain, "domain records...")
 	r.converge()
-	if err := client.UpdateDomainRecords(r.Customer, r.Domain, r.Records); err != nil {
+	if err := client.UpdateDomainRecords(ctx, r.Customer, r.Domain, r.Records); err != nil {
 		return diag.FromErr(err)
 	}
 	return nil
 }
 
-func resourceDomainRecordRestore(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceDomainRecordRestore(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*api.Client)
 	r, err := newDomainRecordResource(d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	if err = populateDomainInfo(client, r, d); err != nil {
+	if err = populateDomainInfo(ctx, client, r, d); err != nil {
 		return diag.FromErr(err)
 	}
 
 	log.Println("Restoring", r.Domain, "domain records...")
-	if err := client.UpdateDomainRecords(r.Customer, r.Domain, defaultRecords); err != nil {
+	if err := client.UpdateDomainRecords(ctx, r.Customer, r.Domain, defaultRecords); err != nil {
 		return diag.FromErr(err)
 	}
 	return nil
 }
 
-func populateDomainInfo(client *api.Client, r *domainRecordResource, d *schema.ResourceData) error {
+func populateDomainInfo(ctx context.Context, client *api.Client, r *domainRecordResource, d *schema.ResourceData) error {
 	var err error
 	var domain *api.Domain
 
 	log.Println("Fetching", r.Domain, "info...")
-	domain, err = client.GetDomain(r.Customer, r.Domain)
+	domain, err = client.GetDomain(ctx, r.Customer, r.Domain)
 	if err != nil {
 		return fmt.Errorf("couldn't find domain (%s): %s", r.Domain, err.Error())
 	}

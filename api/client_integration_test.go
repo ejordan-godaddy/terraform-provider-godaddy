@@ -3,6 +3,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -28,7 +29,7 @@ func TestAuthFailure(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, client)
 
-	_, err = client.GetDomainRecords("", "bogus.com")
+	_, err = client.GetDomainRecords(context.Background(), "", "bogus.com")
 	assert.NotNil(t, err)
 }
 
@@ -54,7 +55,7 @@ func TestGetTooManyRecords(t *testing.T) {
 }
 
 func getRecords(t *testing.T, client *Client, domain string) ([]*DomainRecord, error) {
-	records, err := client.GetDomainRecords("", domain)
+	records, err := client.GetDomainRecords(context.Background(), "", domain)
 	assert.Nil(t, err)
 	assert.NotNil(t, records)
 

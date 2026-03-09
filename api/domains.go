@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -18,16 +19,16 @@ const (
 )
 
 // GetDomains fetches the details for the provided domain
-func (c *Client) GetDomains(customerID string) ([]Domain, error) {
+func (c *Client) GetDomains(ctx context.Context, customerID string) ([]Domain, error) {
 	domainURL := fmt.Sprintf(pathDomains, c.baseURL, "")
-	req, err := http.NewRequest(http.MethodGet, domainURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, domainURL, nil)
 
 	if err != nil {
 		return nil, err
 	}
 
 	var d []Domain
-	if err := c.execute(customerID, req, &d); err != nil {
+	if err := c.execute(ctx, customerID, req, &d); err != nil {
 		return nil, err
 	}
 
@@ -35,16 +36,16 @@ func (c *Client) GetDomains(customerID string) ([]Domain, error) {
 }
 
 // GetDomain fetches the details for the provided domain
-func (c *Client) GetDomain(customerID, domain string) (*Domain, error) {
+func (c *Client) GetDomain(ctx context.Context, customerID, domain string) (*Domain, error) {
 	domainURL := fmt.Sprintf(pathDomains, c.baseURL, domain)
-	req, err := http.NewRequest(http.MethodGet, domainURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, domainURL, nil)
 
 	if err != nil {
 		return nil, err
 	}
 
 	d := new(Domain)
-	if err := c.execute(customerID, req, &d); err != nil {
+	if err := c.execute(ctx, customerID, req, &d); err != nil {
 		return nil, err
 	}
 
@@ -52,19 +53,19 @@ func (c *Client) GetDomain(customerID, domain string) (*Domain, error) {
 }
 
 // GetDomainRecords fetches all existing records for the provided domain
-func (c *Client) GetDomainRecords(customerID, domain string) ([]*DomainRecord, error) {
+func (c *Client) GetDomainRecords(ctx context.Context, customerID, domain string) ([]*DomainRecord, error) {
 	offset := 1
 	records := make([]*DomainRecord, 0)
 	for {
 		page := make([]*DomainRecord, 0)
 		domainURL := fmt.Sprintf(pathDomainRecords, c.baseURL, domain, defaultLimit, offset)
-		req, err := http.NewRequest(http.MethodGet, domainURL, nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, domainURL, nil)
 
 		if err != nil {
 			return nil, err
 		}
 
-		if err := c.execute(customerID, req, &page); err != nil {
+		if err := c.execute(ctx, customerID, req, &page); err != nil {
 			return nil, err
 		}
 		if len(page) == 0 {
@@ -78,7 +79,7 @@ func (c *Client) GetDomainRecords(customerID, domain string) ([]*DomainRecord, e
 }
 
 // UpdateDomainRecords adds records or replaces all existing records for the provided domain
-func (c *Client) UpdateDomainRecords(customerID, domain string, records []*DomainRecord) error {
+func (c *Client) UpdateDomainRecords(ctx context.Context, customerID, domain string, records []*DomainRecord) error {
 	for t := range supportedTypes {
 		typeRecords := c.domainRecordsOfType(t, records)
 		if IsDisallowed(t, typeRecords) {
@@ -96,12 +97,12 @@ func (c *Client) UpdateDomainRecords(customerID, domain string, records []*Domai
 		log.Println(domainURL)
 		log.Println(buffer)
 
-		req, err := http.NewRequest(http.MethodPut, domainURL, buffer)
+		req, err := http.NewRequestWithContext(ctx, http.MethodPut, domainURL, buffer)
 		if err != nil {
 			return err
 		}
 
-		if err := c.execute(customerID, req, nil); err != nil {
+		if err := c.execute(ctx, customerID, req, nil); err != nil {
 			return err
 		}
 	}
