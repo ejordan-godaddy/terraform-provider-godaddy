@@ -1,7 +1,6 @@
 package godaddy
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -24,14 +23,12 @@ func TestProvider(t *testing.T) {
 	}
 }
 
+//nolint:unused // used by acceptance tests
 func testAccPreCheck(t *testing.T) {
-	verifyEnvExists(t, "GODADDY_API_KEY")
-	verifyEnvExists(t, "GODADDY_API_SECRET")
-	verifyEnvExists(t, "GODADDY_DOMAIN")
-}
-
-func verifyEnvExists(t *testing.T, key string) {
-	if v := os.Getenv(key); v == "" {
-		t.Fatal(fmt.Sprintf("%s must be set for acceptance tests.", key))
+	t.Helper()
+	for _, key := range []string{"GODADDY_API_KEY", "GODADDY_API_SECRET", "GODADDY_DOMAIN"} {
+		if os.Getenv(key) == "" {
+			t.Fatalf("%s must be set for acceptance tests.", key)
+		}
 	}
 }

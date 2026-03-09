@@ -224,11 +224,11 @@ func ValidateData(t, data string) error {
 	case SRVType:
 		return nil
 	case TXTType:
-		if len(data) < 0 || len(data) > 512 {
+		if len(data) > 512 {
 			return errors.New("TXT data must be between 0..512 characters in length")
 		}
 	default:
-		if len(data) < 0 || len(data) > 255 {
+		if len(data) > 255 {
 			return errors.New("data must be between 0..255 characters in length")
 		}
 	}

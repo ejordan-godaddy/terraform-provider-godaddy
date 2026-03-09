@@ -6,14 +6,9 @@ import (
 	"github.com/ejordan-godaddy/terraform-provider-godaddy/plugin/godaddy"
 )
 
-var (
-	// these will be set by the goreleaser configuration
-	// to appropriate values for the compiled binary
-	version string = "dev"
-
-	// goreleaser can also pass the specific commit if you want
-	// commit  string = ""
-)
+// these will be set by the goreleaser configuration
+// to appropriate values for the compiled binary.
+var version = "dev" //nolint:unused // set via ldflags
 
 func main() {
 	plugin.Serve(&plugin.ServeOpts{

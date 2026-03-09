@@ -344,7 +344,9 @@ func populateResourceDataFromResponse(recs []*api.DomainRecord, r *domainRecordR
 	}
 
 	if domain == "" {
-		d.Set(attrDomain, d.Id())
+		if err := d.Set(attrDomain, d.Id()); err != nil {
+			return err
+		}
 	}
 
 	return nil
