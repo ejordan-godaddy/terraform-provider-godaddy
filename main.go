@@ -3,6 +3,7 @@ package main
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
+
 	"github.com/ejordan-godaddy/terraform-provider-godaddy/plugin/godaddy"
 )
 

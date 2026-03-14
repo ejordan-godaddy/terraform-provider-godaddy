@@ -12,7 +12,7 @@ import (
 
 const (
 	defaultLimit = 500
-  
+
 	pathDomainRecords       = "%s/v1/domains/%s/records?limit=%d&offset=%d"
 	pathDomainRecordsByType = "%s/v1/domains/%s/records/%s"
 	pathDomains             = "%s/v1/domains/%s"

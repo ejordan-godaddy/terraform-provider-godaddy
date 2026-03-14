@@ -64,7 +64,7 @@ const (
 	DefaultPort     = 0
 
 	StatusActive    = "ACTIVE"
-	StatusCancelled = "CANCELLED"
+	StatusCanceled = "CANCELED"
 
 	Ptr       = "@"
 	AType     = "A"
